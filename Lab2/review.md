@@ -1,30 +1,67 @@
-🎮 Gaming Social Network Database
-Цей репозиторій містить архітектуру бази даних для ігрової соціальної платформи. Система дозволяє користувачам створювати публікації (огляди, новини), класифікувати їх за допомогою тегів та обговорювати контент у коментарях.
+Звіт з проектування схеми бази даних (Gaming Social Network)
+1. Огляд схеми бази даних
+Розроблена база даних призначена для функціонування ігрової соціальної платформи, де користувачі можуть публікувати контент, класифікувати його за допомогою тегів та залишати коментарі. Схема складається з п'яти таблиць: users, tags, posts, comments та post_tags.
 
-🏗️ Архітектура та ER-діаграма
-Схема побудована на реляційній моделі з дотриманням нормальних форм. Вона включає зв'язки 1:N (User → Posts, Post → Comments) та M:N (Posts ↔ Tags).
+Опис таблиць
 
-> Примітка: На схемі відображені основні сутності та логічні зв'язки між ними.
+1.1. Таблиця users (Користувачі)
 
-📊 Опис структури даних
-1. Основні таблиці
+Зберігає облікові дані та інформацію про реєстрацію гравців.
 
-Таблиця	Опис	Ключові особливості
-users	Профілі гравців	Унікальні нікнейми та email, автоматична дата реєстрації.
-posts	Контент (статті/новини)	Прив'язка до автора, підтримка каскадного видалення.
-comments	Обговорення	Зв'язок "автор-пост", валідація тексту на порожні значення.
-tags	Категорії	Унікальні назви для фільтрації ігор (RPG, FPS тощо).
-2. Технічні рішення
+Стовпець	Тип даних	Обмеження / Ключі	Опис
+user_id	INTEGER	PRIMARY KEY, IDENTITY	Унікальний ідентифікатор користувача.
+nickname	VARCHAR(50)	NOT NULL, UNIQUE	Нікнейм користувача (не порожній).
+email	VARCHAR(100)	NOT NULL, UNIQUE	Електронна адреса користувача.
+password	VARCHAR(255)	NOT NULL	Хешований пароль для входу.
+reg_date	TIMESTAMP	DEFAULT CURRENT_TIMESTAMP	Дата та час реєстрації в системі.
+1.2. Таблиця tags (Теги)
 
-Складені ключі: У таблиці post_tags використано PRIMARY KEY (post_id, tag_id) для уникнення дублювання тегів у одному пості.
+Словник категорій для класифікації публікацій за жанрами або темами.
 
-Цілісність даних: Використано обмеження CHECK для валідації довжини рядків та NOT NULL для обов'язкових полів.
+Стовпець	Тип даних	Обмеження / Ключі	Опис
+tag_id	INTEGER	PRIMARY KEY, IDENTITY	Унікальний ідентифікатор тегу.
+tag_name	VARCHAR(50)	NOT NULL, UNIQUE	Назва тегу (наприклад, 'RPG', 'Update').
+1.3. Таблиця posts (Публікації)
 
-Автоматизація: Поля reg_date та created_at заповнюються автоматично через DEFAULT CURRENT_TIMESTAMP.
+Зберігає статті, новини та огляди, створені користувачами.
 
-💻 SQL Реалізація
+Стовпець	Тип даних	Обмеження / Ключі	Опис
+post_id	INTEGER	PRIMARY KEY, IDENTITY	Унікальний ідентифікатор публікації.
+user_id	INTEGER	FOREIGN KEY	Автор поста. ON DELETE CASCADE.
+title	VARCHAR(200)	NOT NULL, CHECK (>0)	Заголовок публікації.
+content	TEXT	NOT NULL	Текстовий зміст публікації.
+created_at	TIMESTAMP	DEFAULT CURRENT_TIMESTAMP	Час створення поста.
+1.4. Таблиця comments (Коментарі)
+
+Зберігає повідомлення користувачів під відповідними публікаціями.
+
+Стовпець	Тип даних	Обмеження / Ключі	Опис
+comment_id	INTEGER	PRIMARY KEY, IDENTITY	Унікальний ідентифікатор коментаря.
+post_id	INTEGER	FOREIGN KEY	Посилання на пост. ON DELETE CASCADE.
+user_id	INTEGER	FOREIGN KEY	Автор коментаря. ON DELETE CASCADE.
+comment_text	TEXT	NOT NULL, CHECK (trim)	Текст коментаря (заборонено порожні).
+created_at	TIMESTAMP	DEFAULT CURRENT_TIMESTAMP	Час написання коментаря.
+1.5. Таблиця post_tags (Зв'язок Пост-Тег)
+
+Зв'язуюча таблиця для реалізації зв'язку "багато до багатьох" між постами та тегами.
+
+Стовпець	Тип даних	Обмеження / Ключі	Опис
+post_id	INTEGER	PRIMARY KEY, FK	Посилання на публікацію.
+tag_id	INTEGER	PRIMARY KEY, FK	Посилання на тег.
+Важливі обмеження:
+
+Використано ON DELETE CASCADE для всіх зовнішніх ключів, що забезпечує автоматичне очищення пов'язаних даних (коментарів, постів та тегів) при видаленні користувача або публікації.
+
+Складений первинний ключ PRIMARY KEY (post_id, tag_id) запобігає дублюванню однакових тегів на одному пості.
+
+2. ER-діаграма
+Нижче наведена структура зв'язків між сутностями:
+
+3. SQL-скрипт створення та наповнення
+Для реалізації схеми та наповнення тестовими даними використано наступний скрипт:
+
 SQL
--- Створення таблиць (DDL)
+-- 1. СТВОРЕННЯ ТАБЛИЦЬ
 CREATE TABLE users (
     user_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     nickname VARCHAR(50) NOT NULL UNIQUE CHECK (length(nickname) > 0),
@@ -47,6 +84,16 @@ CREATE TABLE posts (
     CONSTRAINT fk_post_author FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
+CREATE TABLE comments (
+    comment_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    post_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    comment_text TEXT NOT NULL CHECK (length(trim(comment_text)) > 0),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_comment_post FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE,
+    CONSTRAINT fk_comment_author FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
 CREATE TABLE post_tags (
     post_id INTEGER NOT NULL,
     tag_id INTEGER NOT NULL,
@@ -55,21 +102,21 @@ CREATE TABLE post_tags (
     CONSTRAINT fk_pt_tag FOREIGN KEY (tag_id) REFERENCES tags(tag_id) ON DELETE CASCADE
 );
 
--- Наповнення (DML)
-INSERT INTO users (nickname, email, password) 
-VALUES ('Tirsky_D', 'tirsky@kpi.ua', 'pass1'), ('Gamer1', 'g1@ukr.net', 'pass3');
+-- 2. НАПОВНЕННЯ ДАНИМИ
+INSERT INTO users (nickname, email, password) VALUES 
+('Tirsky_D', 'tirsky@kpi.ua', 'pass1'),
+('Ferenchuk_Z', 'ferenchuk@kpi.ua', 'pass2'),
+('Gamer1', 'g1@ukr.net', 'pass3');
 
-INSERT INTO tags (tag_name) VALUES ('RPG'), ('Cyberpunk'), ('Update');
+INSERT INTO tags (tag_name) VALUES ('RPG'), ('Cyberpunk'), ('Update'), ('Reviews');
 
-INSERT INTO posts (user_id, title, content) 
-VALUES (1, 'Cyberpunk 2077 Update', 'The new patch fixes major bugs...');
+INSERT INTO posts (user_id, title, content) VALUES 
+(1, 'Cyberpunk 2077 Update', 'The new patch fixes major bugs...'),
+(2, 'The Witcher 4 Saga', 'CD Projekt Red confirmed the new game development.'),
+(1, 'Best Indie Games 2026', 'A list of hidden gems this year.');
 
-INSERT INTO post_tags (post_id, tag_id) VALUES (1, 2), (1, 3);
-🚀 Тестування та результати
-Для перевірки роботи схеми було виконано складний запит з об'єднанням чотирьох таблиць (JOIN), щоб вивести публікації разом з їх авторами та відповідними категоріями.
+INSERT INTO comments (post_id, user_id, comment_text) VALUES 
+(1, 2, 'Finally! Performance is much better now.'),
+(2, 1, 'Hope they bring back Geralt.');
 
-Скріншот результату запиту:
-
-Висновок: База даних успішно обробляє зв'язки "багато до багатьох", що дозволяє одному посту мати кілька тегів одночасно (як показано на прикладі Cyberpunk 2077 Update).
-
-Хочете, щоб я додав розділ про те, як розгорнути цю базу через Docker або як підключити її до Node.js/Python проекту?
+INSERT INTO post_tags (post_id, tag_id) VALUES (1, 2), (1, 3), (2, 1);
