@@ -1,10 +1,10 @@
-Звіт з проектування схеми бази даних (Gaming Social Network)
+### Звіт з проектування схеми бази даних (Gaming Social Network)
 1. Огляд схеми бази даних
 Розроблена база даних призначена для функціонування ігрової соціальної платформи, де користувачі можуть публікувати контент, класифікувати його за допомогою тегів та залишати коментарі. Схема складається з п'яти таблиць: users, tags, posts, comments та post_tags.
 
 Опис таблиць
 
-1.1. Таблиця users (Користувачі)
+### 1.1. Таблиця users (Користувачі)
 
 Зберігає облікові дані та інформацію про реєстрацію гравців.
 
@@ -14,14 +14,14 @@ nickname	VARCHAR(50)	NOT NULL, UNIQUE	Нікнейм користувача (н�
 email	VARCHAR(100)	NOT NULL, UNIQUE	Електронна адреса користувача.
 password	VARCHAR(255)	NOT NULL	Хешований пароль для входу.
 reg_date	TIMESTAMP	DEFAULT CURRENT_TIMESTAMP	Дата та час реєстрації в системі.
-1.2. Таблиця tags (Теги)
+### 1.2. Таблиця tags (Теги)
 
 Словник категорій для класифікації публікацій за жанрами або темами.
 
 Стовпець	Тип даних	Обмеження / Ключі	Опис
 tag_id	INTEGER	PRIMARY KEY, IDENTITY	Унікальний ідентифікатор тегу.
 tag_name	VARCHAR(50)	NOT NULL, UNIQUE	Назва тегу (наприклад, 'RPG', 'Update').
-1.3. Таблиця posts (Публікації)
+### 1.3. Таблиця posts (Публікації)
 
 Зберігає статті, новини та огляди, створені користувачами.
 
@@ -31,7 +31,7 @@ user_id	INTEGER	FOREIGN KEY	Автор поста. ON DELETE CASCADE.
 title	VARCHAR(200)	NOT NULL, CHECK (>0)	Заголовок публікації.
 content	TEXT	NOT NULL	Текстовий зміст публікації.
 created_at	TIMESTAMP	DEFAULT CURRENT_TIMESTAMP	Час створення поста.
-1.4. Таблиця comments (Коментарі)
+### 1.4. Таблиця comments (Коментарі)
 
 Зберігає повідомлення користувачів під відповідними публікаціями.
 
@@ -41,7 +41,7 @@ post_id	INTEGER	FOREIGN KEY	Посилання на пост. ON DELETE CASCADE.
 user_id	INTEGER	FOREIGN KEY	Автор коментаря. ON DELETE CASCADE.
 comment_text	TEXT	NOT NULL, CHECK (trim)	Текст коментаря (заборонено порожні).
 created_at	TIMESTAMP	DEFAULT CURRENT_TIMESTAMP	Час написання коментаря.
-1.5. Таблиця post_tags (Зв'язок Пост-Тег)
+### 1.5. Таблиця post_tags (Зв'язок Пост-Тег)
 
 Зв'язуюча таблиця для реалізації зв'язку "багато до багатьох" між постами та тегами.
 
