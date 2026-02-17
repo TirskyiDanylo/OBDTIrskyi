@@ -53,13 +53,13 @@
 ### SQL-скрипт нормалізації
 
 ```sql
--- 1. Створення таблиці-довідника для типів постів
+ 1. Створення таблиці-довідника для типів постів
 CREATE TABLE post_types (
     type_id SERIAL PRIMARY KEY,
     type_name VARCHAR(50) NOT NULL UNIQUE
 );
 
--- 2. Наповнення довідника даними
+ 2. Наповнення довідника даними
 INSERT INTO post_types (type_name) VALUES 
 ('General'),  
 ('Guide'),    
@@ -67,16 +67,16 @@ INSERT INTO post_types (type_name) VALUES
 ('News'),    
 ('Question');  
 
--- 3. Додавання посилання до таблиці posts
+ 3. Додавання посилання до таблиці posts
 ALTER TABLE posts 
 ADD COLUMN type_id INT;
 
--- 4. Оновлення існуючих постів
+ 4. Оновлення існуючих постів
 UPDATE posts 
 SET type_id = 1 
 WHERE type_id IS NULL;
 
--- 5. Встановлення обмеження NOT NULL та Foreign Key
+ 5. Встановлення обмеження NOT NULL та Foreign Key
 ALTER TABLE posts 
 ALTER COLUMN type_id SET NOT NULL,
 ADD CONSTRAINT fk_post_type 
