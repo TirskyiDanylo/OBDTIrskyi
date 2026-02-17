@@ -44,7 +44,7 @@ FROM post_tags
 GROUP BY tag_id
 HAVING COUNT(*) > 1;
 ```
-![total_votes](./src/4.png)
+![total_votes](./src/4s.png)
 
 ---
 
