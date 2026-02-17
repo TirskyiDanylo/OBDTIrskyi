@@ -61,17 +61,17 @@ CREATE TABLE post_types (
 
 -- 2. Наповнення довідника даними
 INSERT INTO post_types (type_name) VALUES 
-('General'),   -- Звичайний пост
-('Guide'),     -- Гайд / Інструкція
-('Review'),    -- Огляд гри
-('News'),      -- Новини
-('Question');  -- Питання до спільноти
+('General'),   
+('Guide'),     
+('Review'),    
+('News'),     
+('Question'); 
 
--- 3. Додавання посилання (зовнішнього ключа) до таблиці posts
+-- 3. Додавання посилання до таблиці posts
 ALTER TABLE posts 
 ADD COLUMN type_id INT;
 
--- 4. Оновлення існуючих постів (встановлення дефолтного значення)
+-- 4. Оновлення існуючих постів
 UPDATE posts 
 SET type_id = 1 
 WHERE type_id IS NULL;
