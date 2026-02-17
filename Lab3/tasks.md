@@ -8,76 +8,50 @@ SELECT * FROM users;
 
 ---
 
-## 2. Показати всі рівні
+## 2. Показати контактні дані
 ```sql
-SELECT * FROM levels;
+SELECT nickname, email FROM users;
 ```
 ![All Levels](./src/2.png)
 
 ---
 
-## 3. Показати всі голоси
+## 3. Показати всі доступні теги
 ```sql
-SELECT * FROM votes;
+SELECT * FROM tags;
 ```
 ![All Votes](./src/3.png)
 
 ---
 
-## 4. Отримати тільки імена користувачів
+## 4. Знайти пости конкретного автора
 ```sql
-SELECT username FROM users;
+SELECT title, created_at FROM posts 
+WHERE user_id = 1;
 ```
-![Username from Users](./src/4.png)
+![Username from Users](./src/4s.png)
 
 ---
 
-## 5. Отримати назви рівнів та їх складність (placement)
+## 5. Знайти коментарі за ключовим словом
 ```sql
-SELECT name, placement FROM levels;
+SELECT * FROM comments 
+WHERE comment_text LIKE '%Performance%';
 ```
 ![Name and placement from levels](./src/5.png)
 
 ---
 
-## 6. Знайти тільки ПУБЛІЧНІ рівні (ті, що не приховані)
-```sql
-SELECT * FROM levels 
-WHERE public = TRUE;
-```
-![All Public Levels](./src/6.png)
-
----
-
-## 7. Знайти рівні, які складніші за перший (placement > 1)
-```sql
-SELECT name, placement FROM levels 
-WHERE placement > 1;
-```
-![Levels with placement > 1](./src/7.png)
-
----
-
-## 8. Знайти всі ПОЗИТИВНІ голоси (лайки)
-```sql
-SELECT * FROM votes 
-WHERE is_agree = TRUE;
-```
-![Positive Votes](./src/8.png)
-
----
-
-## 9. Хто за що проголосував (з іменами замість цифр)
+## 6. Показати пости разом з іменами авторів
 ```sql
 SELECT 
-    users.username AS Гравець, 
-    levels.name AS Рівень, 
-    votes.is_agree AS Лайк
-FROM votes
-JOIN users ON votes.user_id = users.user_id
-JOIN levels ON votes.level_id = levels.level_id;
+    users.nickname AS Автор, 
+    posts.title AS Заголовок, 
+    posts.created_at AS Дата
+FROM posts
+JOIN users ON posts.user_id = users.user_id;
 ```
-![Votes by Users](./src/9.png)
+![All Public Levels](./src/6.png)
 
 ---
 
@@ -85,104 +59,74 @@ JOIN levels ON votes.level_id = levels.level_id;
 
 ## 1. Додавання нового користувача
 ```sql
-INSERT INTO users (username) VALUES ('Pro_Gamer_2024');
-SELECT * FROM users;
+INSERT INTO users (nickname, email, password) 
+VALUES ('Star_Lord', 'quill@galaxy.com', 'dance_off_2026');
+
+SELECT * FROM users WHERE nickname = 'Star_Lord';
 ```
-![New User](./src/10.png)
+![New User](./src/7.png)
 
 ---
 
-## 2. Додавання нового рівня
+## 2. Додавання нової публікації
 ```sql
-INSERT INTO levels (name, placement, moderation, public) VALUES ('Impossible Mode', 10, TRUE, TRUE);
-```
-![New Level](./src/11.png)
+INSERT INTO posts (user_id, title, content) 
+VALUES (4, 'How to fly a Milano', 'Step 1: Don`t let Rocket drive...');
 
----
-
-## 3. Додавання нового голосу
-```sql
-INSERT INTO votes (user_id, level_id, is_agree) VALUES (3, 6, FALSE);
-SELECT * FROM votes WHERE user_id = 3;
+SELECT * FROM posts WHERE user_id = 4;
 ```
-![New Vote](./src/12.png)
+![New Level](./src/8.png)
 
 ---
 
 # UPDATE
 
-## 1. Оновлення голосу
-```sql
-UPDATE votes
-SET is_agree = TRUE
-WHERE user_id = 3 AND level_id = 6;
-SELECT * FROM VOTES WHERE user_id = 3;
-```
-![Vote update](./src/13.png)
-
----
-
-## 2. Оновлення Користувача
+## 1. Оновлення нікнейму користувача
 ```sql
 UPDATE users
-SET username = 'romavolosh'
+SET nickname = 'Tirsky_PRO'
 WHERE user_id = 1;
-SELECT * FROM USERS WHERE user_id = 1;
+
+SELECT * FROM users WHERE user_id = 1;
 ```
-![User update](./src/14.png)
+![Vote update](./src/9.png)
 
 ---
 
-## 3. Оновлення Рівня
+## 2. Оновлення змісту публікації
 ```sql
-UPDATE levels
-SET moderation = FALSE,
-    "public" = FALSE
-WHERE level_id = 1;
-SELECT * FROM levels WHERE level_id = 1;
+UPDATE posts
+SET content = 'The new patch fixes major bugs and improves FPS by 20%.'
+WHERE post_id = 1;
+
+SELECT * FROM posts WHERE post_id = 1;
 ```
-![Level Update](./src/15.png)
+![User update](./src/10.png)
 
 ---
 
 # DELETE
 
-## 1. Видалення користувача
+## 1. Видалення конкретного коменатря
 ```sql
-DELETE FROM USERS
-WHERE user_id = 2;
-SELECT * FROM USERS WHERE user_id = 2;
+DELETE FROM comments
+WHERE comment_id = 2;
+
+SELECT * FROM comments;
 ```
-![Level Update](./src/16.png)
+![Level Update](./src/11.png)
 
 ---
 
-## 1. Видалення користувача
+## 2. Видалення категорії
 ```sql
-DELETE FROM USERS
-WHERE user_id = 2;
-SELECT * FROM USERS WHERE user_id = 2;
+DELETE FROM tags
+WHERE tag_name = 'Update';
+
+SELECT * FROM tags;
+SELECT * FROM post_tags;
 ```
-![Level Update](./src/16.png)
+![Level Update](./src/12.png)
 
 ---
 
-## 2. Видалення Голосу
-```sql
-DELETE FROM VOTES
-WHERE NOT is_agree;
-SELECT * FROM VOTES;
-```
-![Level Update](./src/17.png)
-
----
-
-## 2. Видалення Рівня
-```sql
-DELETE FROM LEVELS
-WHERE placement > 2;
-SELECT * FROM LEVELS;
-```
-![Level Update](./src/18.png)
-
----
