@@ -75,7 +75,8 @@ model student {
   * **Тестування даних:** Створено/оновлено запис для студента **DanyloCool** (ID: 101) для перевірки відображення нових атрибутів.
   * **Цілісність:** Всі зовнішні ключі (Foreign Keys) між `book` та `Review` працюють коректно.
 
-\<img width="1920" alt="Prisma Studio Verification" src="https://github.com/user-attachments/assets/597838f2-626e-4565-a0e3-e0fe3e02bf01" /\>
+<img width="1437" height="814" alt="Снимок экрана 2026-04-02 в 11 26 13" src="https://github.com/user-attachments/assets/8ad95bc9-8081-425c-913a-8a4fa3a76a33" />
+
 
 -----
 
