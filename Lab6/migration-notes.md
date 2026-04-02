@@ -27,7 +27,7 @@ model Review {
 model book {
   book_id String   @id @db.VarChar(50)
   // ... інші поля
-  Review  Review[] // Зворотній зв'язок для моделі Review
+  Review  Review[]
 }
 ````
 
@@ -44,7 +44,7 @@ model student {
   student_card_id Int     @id
   full_name       String  @db.VarChar(255)
   email           String  @unique @db.VarChar(150)
-  is_pro          Boolean @default(false) // Нове поле: статус про-аккаунта
+  is_pro          Boolean @default(false)
   loan            loan[]
 }
 ```
