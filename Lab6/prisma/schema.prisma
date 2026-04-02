@@ -4,10 +4,9 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  // URL тепер не потрібен тут у Prisma 7.x, він береться з prisma.config.ts
 }
 
-// 1. Користувачі (додано поле is_pro для виконання умови Лаби 6)
+// 1. Користувачі
 model users {
   user_id    Int        @id @default(autoincrement())
   nickname   String     @unique @db.VarChar(50)
@@ -19,7 +18,7 @@ model users {
   comments   comments[]
 }
 
-// 2. Пости (додано зв'язок reviews)
+// 2. Пости
 model posts {
   post_id    Int          @id @default(autoincrement())
   user_id    Int
@@ -32,7 +31,7 @@ model posts {
   users      users        @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 }
 
-// 3. НОВА ТАБЛИЦЯ: Відгуки (вимога Лаби 6)
+// 3. Відгуки
 model GameReview {
   review_id Int     @id @default(autoincrement())
   rating    Int
@@ -59,7 +58,7 @@ model tags {
   post_tags post_tags[]
 }
 
-// 6. Зв'язок Пости-Теги (Many-to-Many)
+// 6. Зв'язок
 model post_tags {
   post_id Int
   tag_id  Int
